@@ -26,7 +26,8 @@ class TodoApp extends React.Component {
                 title : "Deploy to Live server",
                 completed : false
             }
-        ]
+        ],
+        show : false
     }
     
     handleChange = id => {
@@ -36,7 +37,8 @@ class TodoApp extends React.Component {
                     todo.completed = !todo.completed;
                 }
                 return todo;
-            })            
+            }),
+            show : !this.state.show            
         });
     }
 
@@ -75,7 +77,7 @@ class TodoApp extends React.Component {
     render() {
         return (
             <div className= "container">
-                <Header show= {this.state.show}/>
+                <Header headerSpan= {this.state.show} />
                 <AddTodo addTodo= {this.addTodo}/>
                 <Todos todos = {this.state.todos} 
                     handleChange= {this.handleChange}
