@@ -1,9 +1,11 @@
 import React from "react";
-import Header from "./layout/Header";
+import {v4 as uuidv4 } from 'uuid';
+import axios from "axios";
 
+import Header from "./layout/Header";
 import Todos from "./Todos";
 import AddTodo from "./AddTodo";
-import {v4 as uuidv4 } from 'uuid';
+
 
 class TodoApp extends React.Component {
 
@@ -34,35 +36,46 @@ class TodoApp extends React.Component {
                     todo.completed = !todo.completed;
                 }
                 return todo;
-            })
+            })            
         });
     }
 
     deleteTodo = id => {
-        this.setState({
-            todos: [
-                ...this.state.todos.filter(todo => {
-                    return id !== todo.id;
-                })
-            ]
-        });
+        
+        axios.delete(`https://jsonplaceholder.typicode.com/todos/${id}`)
+        .then( 
+            response => this.setState({
+                todos: [
+                    ...this.state.todos.filter(todo => {
+                        return id !== todo.id;
+                    })
+                ]
+            })
+        )
     }
 
     addTodo = title => {
-        const newTodo = {
-            id : uuidv4(),
+        axios.post("https://jsonplaceholder.typicode.com/todos", {
             title: title,
             completed: false
-        }
-        this.setState({
-            todos : [...this.state.todos, newTodo]
-        })
+        }).then(
+            response => this.setState({
+                todos : [...this.state.todos, response.data]
+            })
+        )
+    }
+
+    componentDidMount() {
+        axios.get("https://jsonplaceholder.typicode.com/todos?_limit=10")
+            .then(response => this.setState({
+                todos : response.data
+            }));
     }
 
     render() {
         return (
             <div className= "container">
-                <Header />
+                <Header show= {this.state.show}/>
                 <AddTodo addTodo= {this.addTodo}/>
                 <Todos todos = {this.state.todos} 
                     handleChange= {this.handleChange}
